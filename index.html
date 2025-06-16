@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Автосервис (Enterprise)</title>
+    <style>
+        /* --- Общие стили и переменные --- */
+        :root { 
+            --primary-color: #007bff; 
+            --light-gray: #f8f9fa; 
+            --border-color: #dee2e6; 
+            --danger-color: #dc3545;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+        }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            line-height: 1.6; 
+            background-color: #f4f4f9; 
+            color: #333; 
+            margin: 0; 
+        }
+        .hidden { display: none !important; }
+
+        /* --- Экран входа --- */
+        #login-screen { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.7); 
+            z-index: 1000; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        #login-box { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 8px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+            text-align: center; 
+            width: 320px;
+        }
+        #login-box h2 { margin-top: 0; }
+        #login-box input { 
+            display: block; 
+            width: 100%; 
+            padding: 10px; 
+            margin-bottom: 10px; 
+            box-sizing: border-box; 
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #login-box button { 
+            width: 100%; 
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #login-error { 
+            color: var(--danger-color); 
+            margin-top: 10px; 
+            height: 1em; 
+            font-size: 14px;
+        }
+
+        /* --- Основной контейнер и заголовок --- */
+        .container { 
+            max-width: 1600px; 
+            margin: 20px auto; 
+            padding: 20px; 
+            background: #fff; 
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+            border-radius: 8px; 
+        }
+        header { 
+            border-bottom: 2px solid var(--border-color); 
+            padding-bottom: 10px; 
+            margin-bottom: 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: wrap; 
+            gap: 15px;
+        }
+        header .title-nav { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            flex-wrap: wrap; 
+        }
+        header h1 { margin: 0; font-size: 24px; }
+        nav button { 
+            background: none; 
+            border: none; 
+            font-size: 16px; 
+            cursor: pointer; 
+            padding: 5px 10px; 
+            border-radius: 4px; 
+            transition: background-color 0.2s, color 0.2s;
+        }
+        nav button.active { 
+            background-color: var(--primary-color); 
+            color: white; 
+            font-weight: bold; 
+        }
+        .db-controls button { padding: 8px 12px; border: 1px solid #ccc; background: #e7e7e7; cursor: pointer; border-radius: 4px; }
+        
+        /* --- Стили для всех "страниц" --- */
+        .view { padding-top: 10px; }
+        .view-title { font-size: 2em; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .main-grid, #dashboard, #inventory-view-grid, #reports-view-content { display: grid; gap: 20px; }
+        #dashboard, #reports-view-content { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .main-grid { grid-template-columns: 1fr 1fr 1fr; }
+        #inventory-view-grid { grid-template-columns: 1fr 2fr; }
+        .column, .card { border: 1px solid #ddd; padding: 15px; border-radius: 5px; background-color: #fff; }
+        
+        /* --- Списки и элементы --- */
+        .list-container { overflow-y: auto; max-height: 60vh; border: 1px solid #eee; border-radius: 4px; padding: 5px; }
+        ul { list-style: none; padding: 0; margin: 0; }
+        li { padding: 10px; border: 1px solid #eee; margin-bottom: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        li .item-text { cursor: pointer; flex-grow: 1; word-break: break-word; }
+        li:hover { background-color: #f0f0f0; }
+        li.selected { background-color: #d4eaf7; border-color: #9acfea; font-weight: bold; }
+        .item-controls button { font-size: 12px; padding: 2px 6px; margin-left: 5px; border-radius: 3px; border: 1px solid transparent; cursor: pointer; }
+        .edit-btn { background-color: var(--warning-color); }
+        .delete-btn { background-color: var(--danger-color); color: white; }
+        
+        /* --- Формы и общие кнопки --- */
+        form { display: flex; flex-direction: column; gap: 10px; }
+        input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+        .form-buttons { display: flex; gap: 10px; }
+        .form-buttons button { flex-grow: 1; padding: 10px; border: none; cursor: pointer; border-radius: 4px; }
+        .submit-btn { background: var(--success-color); color: white; }
+        .cancel-btn { background: #6c757d; color: white; }
+
+        /* --- Форма заказа и интеграция со складом --- */
+        #order-parts-management { border: 1px dashed #ccc; padding: 10px; margin-top: 10px; border-radius: 4px; }
+        #order-parts-list li { font-size: 14px; padding: 5px; }
+        #order-parts-list button { padding: 2px 5px; font-size: 10px; }
+
+        /* --- Отчеты --- */
+        #report-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; align-items: center; }
+        #report-results table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        #report-results th, #report-results td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        #report-results th { background-color: #f2f2f2; }
+
+        /* --- Печать и мобильная адаптация --- */
+        #print-area { display: none; }
+        @media print { body * { visibility: hidden; } #print-area, #print-area * { visibility: visible; } #print-area { display: block; position: absolute; left: 0; top: 0; width: 100%; padding: 20px; font-size: 12pt; } table { width: 100%; border-collapse: collapse; } th, td { border: 1px solid #333; padding: 8px; text-align: left; } }
+        @media (max-width: 992px) { .main-grid, #dashboard, #inventory-view-grid { grid-template-columns: 1fr; } .list-container { max-height: none; } header { flex-direction: column; align-items: stretch; } }
+    </style>
+</head>
+<body>
+    <!-- ЭКРАН ВХОДА -->
+    <div id="login-screen">
+        <div id="login-box">
+            <h2>Вход в CRM</h2>
+            <form id="login-form">
+                <input type="text" id="login-username" placeholder="Логин" value="admin" required>
+                <input type="password" id="login-password" placeholder="Пароль" value="admin" required>
+                <div id="login-error"></div>
+                <button type="submit">Войти</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ОСНОВНОЕ ПРИЛОЖЕНИЕ -->
+    <div id="app-container" class="hidden">
+        <div id="print-area"></div>
+        <div class="container">
+            <header>
+                <div class="title-nav">
+                    <h1>CRM Автосервис</h1>
+                    <nav>
+                        <button id="nav-dashboard">Панель</button>
+                        <button id="nav-workspace">Заказы</button>
+                        <button id="nav-inventory">Склад</button>
+                        <button id="nav-reports">Отчеты</button>
+                    </nav>
+                </div>
+                <div class="db-controls">
+                    <button id="save-db">Сохранить базу</button>
+                    <label><button onclick="document.getElementById('load-db-input').click();">Загрузить</button></label>
+                    <input type="file" id="load-db-input" style="display: none;"/>
+                </div>
+            </header>
+
+            <!-- ВСЕ "СТРАНИЦЫ" ПРИЛОЖЕНИЯ -->
+            <div id="dashboard-view" class="view"></div>
+            <div id="workspace-view" class="view hidden"></div>
+            <div id="inventory-view" class="view hidden"></div>
+            <div id="reports-view" class="view hidden"></div>
+        </div>
+    </div>
+    
+    <!-- Подключаем главный модульный скрипт -->
+    <script type="module" src="src/app.js"></script>
+</body>
+</html>
