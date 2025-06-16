@@ -1,7 +1,7 @@
 // src/db.js
 
 export async function initDB(data) {
-    const SQL = await initSqlJs({ locateFile: file => `./${file}` });
+    const SQL = await initSqlJs({ locateFile: file => `../${file}` });
     const db = data ? new SQL.Database(data) : new SQL.Database();
     db.exec("PRAGMA foreign_keys = ON;");
     if (!data) createTables(db);
