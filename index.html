@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRM Автосервис (Enterprise)</title>
+    <title>CRM Автосервис (Dashboard)</title>
     <style>
-        /* --- Общие стили и переменные --- */
+        /* --- Общие стили --- */
         :root { 
             --primary-color: #007bff; 
             --light-gray: #f8f9fa; 
             --border-color: #dee2e6; 
             --danger-color: #dc3545;
-            --success-color: #28a745;
-            --warning-color: #ffc107;
         }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
@@ -21,80 +19,31 @@
             color: #333; 
             margin: 0; 
         }
-        .hidden { display: none !important; }
-
-        /* --- Экран входа --- */
-        #login-screen { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.7); 
-            z-index: 1000; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-        }
-        #login-box { 
-            background: white; 
-            padding: 40px; 
-            border-radius: 8px; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
-            text-align: center; 
-            width: 320px;
-        }
-        #login-box h2 { margin-top: 0; }
-        #login-box input { 
-            display: block; 
-            width: 100%; 
-            padding: 10px; 
-            margin-bottom: 10px; 
-            box-sizing: border-box; 
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        #login-box button { 
-            width: 100%; 
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            background-color: var(--primary-color);
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        #login-error { 
-            color: var(--danger-color); 
-            margin-top: 10px; 
-            height: 1em; 
-            font-size: 14px;
-        }
-
-        /* --- Основной контейнер и заголовок --- */
         .container { 
-            max-width: 1600px; 
+            max-width: 1400px; 
             margin: 20px auto; 
             padding: 20px; 
             background: #fff; 
             box-shadow: 0 0 10px rgba(0,0,0,0.1); 
             border-radius: 8px; 
         }
+        
+        /* --- Заголовок и Навигация --- */
         header { 
             border-bottom: 2px solid var(--border-color); 
             padding-bottom: 10px; 
             margin-bottom: 20px; 
             display: flex; 
             justify-content: space-between; 
-            align-items: center; 
+            align-items: center;
             flex-wrap: wrap; 
             gap: 15px;
         }
         header .title-nav { 
             display: flex; 
             align-items: center; 
-            gap: 10px; 
-            flex-wrap: wrap; 
+            gap: 20px; 
+            flex-wrap: wrap;
         }
         header h1 { margin: 0; font-size: 24px; }
         nav button { 
@@ -111,97 +60,177 @@
             color: white; 
             font-weight: bold; 
         }
-        .db-controls button { padding: 8px 12px; border: 1px solid #ccc; background: #e7e7e7; cursor: pointer; border-radius: 4px; }
+        .db-controls button { 
+            padding: 8px 12px; 
+            border: 1px solid #ccc; 
+            background: #e7e7e7; 
+            cursor: pointer; 
+            border-radius: 4px; 
+        }
+        .db-controls button:hover { background: #ddd; }
         
-        /* --- Стили для всех "страниц" --- */
-        .view { padding-top: 10px; }
-        .view-title { font-size: 2em; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .main-grid, #dashboard, #inventory-view-grid, #reports-view-content { display: grid; gap: 20px; }
-        #dashboard, #reports-view-content { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
-        .main-grid { grid-template-columns: 1fr 1fr 1fr; }
-        #inventory-view-grid { grid-template-columns: 1fr 2fr; }
-        .column, .card { border: 1px solid #ddd; padding: 15px; border-radius: 5px; background-color: #fff; }
-        
-        /* --- Списки и элементы --- */
-        .list-container { overflow-y: auto; max-height: 60vh; border: 1px solid #eee; border-radius: 4px; padding: 5px; }
+        /* --- Основные секции (Dashboard и Workspace) --- */
+        .main-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        #dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .dashboard-card { 
+            background-color: var(--light-gray); 
+            padding: 20px; 
+            border-radius: 8px; 
+            border: 1px solid var(--border-color); 
+        }
+        .dashboard-card h3 { margin-top: 0; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
+        .kpi { text-align: center; }
+        .kpi .value { font-size: 3em; font-weight: bold; color: var(--primary-color); }
+        .kpi .label { font-size: 1.2em; color: #6c757d; }
+        .dashboard-list { list-style: none; padding: 0; margin: 0; }
+        .dashboard-list li { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+        .dashboard-list li:last-child { border-bottom: none; }
+
+        /* --- Стили для Workspace --- */
+        .column { border: 1px solid #ddd; padding: 15px; border-radius: 5px; display: flex; flex-direction: column; background-color: #fff; }
+        .column h2 { margin-top: 0; }
+        .column-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+        .column-controls input[type="search"], .column-controls select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; flex-grow: 1; min-width: 120px; }
+        .list-container { flex-grow: 1; overflow-y: auto; max-height: 40vh; border: 1px solid #eee; border-radius: 4px; padding: 5px; }
         ul { list-style: none; padding: 0; margin: 0; }
-        li { padding: 10px; border: 1px solid #eee; margin-bottom: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        li { padding: 10px; border: 1px solid #eee; margin-bottom: 5px; border-radius: 4px; transition: background-color 0.2s; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
         li .item-text { cursor: pointer; flex-grow: 1; word-break: break-word; }
         li:hover { background-color: #f0f0f0; }
         li.selected { background-color: #d4eaf7; border-color: #9acfea; font-weight: bold; }
+        .item-controls { flex-shrink: 0; }
         .item-controls button { font-size: 12px; padding: 2px 6px; margin-left: 5px; border-radius: 3px; border: 1px solid transparent; cursor: pointer; }
-        .edit-btn { background-color: var(--warning-color); }
-        .delete-btn { background-color: var(--danger-color); color: white; }
+        .edit-btn { background-color: #ffc107; } .edit-btn:hover { background-color: #e0a800; }
+        .delete-btn { background-color: var(--danger-color); color: white; } .delete-btn:hover { background-color: #c82333; }
         
-        /* --- Формы и общие кнопки --- */
-        form { display: flex; flex-direction: column; gap: 10px; }
+        /* --- Панели деталей и формы --- */
+        .details-panel { margin-top: 15px; padding: 10px; background-color: var(--light-gray); border: 1px solid var(--border-color); border-radius: 4px; }
+        .details-panel h4 { margin-top: 0; display: flex; justify-content: space-between; align-items: center; }
+        .details-panel p { margin: 5px 0; font-size: 14px; }
+        .details-history { margin-top: 10px; max-height: 150px; overflow-y: auto; }
+        .details-history ul { font-size: 13px; }
+        .details-history li { padding: 5px; background-color: white; }
+        .print-btn { padding: 4px 8px; font-size: 12px; cursor: pointer; background: #6c757d; color: white; border: none; border-radius: 3px; }
+        .print-btn:hover { background: #5a6268; }
+        
+        form { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
         input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+        input.invalid { border-color: var(--danger-color); box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25); }
         .form-buttons { display: flex; gap: 10px; }
         .form-buttons button { flex-grow: 1; padding: 10px; border: none; cursor: pointer; border-radius: 4px; }
-        .submit-btn { background: var(--success-color); color: white; }
-        .cancel-btn { background: #6c757d; color: white; }
+        .submit-btn { background: #28a745; color: white; } .submit-btn:hover { background: #218838; }
+        .cancel-btn { background: #6c757d; color: white; } .cancel-btn:hover { background: #5a6268; }
 
-        /* --- Форма заказа и интеграция со складом --- */
-        #order-parts-management { border: 1px dashed #ccc; padding: 10px; margin-top: 10px; border-radius: 4px; }
-        #order-parts-list li { font-size: 14px; padding: 5px; }
-        #order-parts-list button { padding: 2px 5px; font-size: 10px; }
+        .hidden { display: none !important; }
 
-        /* --- Отчеты --- */
-        #report-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; align-items: center; }
-        #report-results table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        #report-results th, #report-results td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        #report-results th { background-color: #f2f2f2; }
-
-        /* --- Печать и мобильная адаптация --- */
+        /* --- Стили для печати --- */
         #print-area { display: none; }
-        @media print { body * { visibility: hidden; } #print-area, #print-area * { visibility: visible; } #print-area { display: block; position: absolute; left: 0; top: 0; width: 100%; padding: 20px; font-size: 12pt; } table { width: 100%; border-collapse: collapse; } th, td { border: 1px solid #333; padding: 8px; text-align: left; } }
-        @media (max-width: 992px) { .main-grid, #dashboard, #inventory-view-grid { grid-template-columns: 1fr; } .list-container { max-height: none; } header { flex-direction: column; align-items: stretch; } }
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area { display: block; position: absolute; left: 0; top: 0; width: 100%; padding: 20px; font-size: 12pt; }
+            h1, h2, h3, p { color: black; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+        }
+        
+        /* --- Мобильная адаптация --- */
+        @media (max-width: 992px) {
+            .container { margin: 0; padding: 10px; border-radius: 0; box-shadow: none; }
+            .main-grid, #dashboard { grid-template-columns: 1fr; }
+            .list-container { max-height: none; overflow-y: visible; }
+            header { flex-direction: column; align-items: stretch; }
+        }
     </style>
 </head>
 <body>
-    <!-- ЭКРАН ВХОДА -->
-    <div id="login-screen">
-        <div id="login-box">
-            <h2>Вход в CRM</h2>
-            <form id="login-form">
-                <input type="text" id="login-username" placeholder="Логин" value="admin" required>
-                <input type="password" id="login-password" placeholder="Пароль" value="admin" required>
-                <div id="login-error"></div>
-                <button type="submit">Войти</button>
-            </form>
+    <!-- Скрытая область для генерации печатной формы -->
+    <div id="print-area"></div> 
+
+    <div class="container">
+        <header>
+            <div class="title-nav">
+                <h1>CRM Автосервис</h1>
+                <nav>
+                    <button id="nav-dashboard" class="active">Панель управления</button>
+                    <button id="nav-workspace">Рабочая область</button>
+                </nav>
+            </div>
+            <div class="db-controls">
+                <button id="save-db">Сохранить базу</button>
+                <label for="load-db-input"><button onclick="document.getElementById('load-db-input').click();">Загрузить базу</button></label>
+                <input type="file" id="load-db-input" style="display: none;"/>
+            </div>
+        </header>
+
+        <!-- Панель управления (Dashboard) -->
+        <div id="dashboard">
+            <div class="dashboard-card kpi">
+                <div id="kpi-in-progress" class="value">0</div>
+                <div class="label">Авто в работе</div>
+            </div>
+            <div class="dashboard-card kpi">
+                <div id="kpi-ready" class="value">0</div>
+                <div class="label">Готовы к выдаче</div>
+            </div>
+            <div class="dashboard-card kpi">
+                <div id="kpi-revenue-month" class="value">0 ₽</div>
+                <div class="label">Выручка за месяц</div>
+            </div>
+            <div class="dashboard-card">
+                <h3>Последние добавленные заказы</h3>
+                <ul id="dashboard-recent-orders" class="dashboard-list"><li>Нет данных</li></ul>
+            </div>
+            <div class="dashboard-card">
+                <h3>Топ-5 клиентов (по сумме заказов)</h3>
+                <ul id="dashboard-top-clients" class="dashboard-list"><li>Нет данных</li></ul>
+            </div>
         </div>
-    </div>
 
-    <!-- ОСНОВНОЕ ПРИЛОЖЕНИЕ -->
-    <div id="app-container" class="hidden">
-        <div id="print-area"></div>
-        <div class="container">
-            <header>
-                <div class="title-nav">
-                    <h1>CRM Автосервис</h1>
-                    <nav>
-                        <button id="nav-dashboard">Панель</button>
-                        <button id="nav-workspace">Заказы</button>
-                        <button id="nav-inventory">Склад</button>
-                        <button id="nav-reports">Отчеты</button>
-                    </nav>
+        <!-- Рабочая область (основные колонки) -->
+        <div id="workspace" class="main-grid hidden">
+            <!-- Колонка Клиентов -->
+            <div class="column">
+                <h2>Клиенты</h2>
+                <div class="column-controls"><input type="search" id="client-search" placeholder="Поиск по клиентам..."></div>
+                <div class="list-container"><ul id="clients-list"></ul></div>
+                <div id="client-details" class="details-panel hidden"></div>
+                <form id="client-form"></form>
+            </div>
+            <!-- Колонка Автомобилей -->
+            <div class="column">
+                <h2>Автомобили</h2>
+                <div id="cars-section" class="hidden">
+                    <div class="column-controls"><input type="search" id="car-search" placeholder="Поиск по авто..."></div>
+                    <div class="list-container"><ul id="cars-list"></ul></div>
+                    <div id="car-details" class="details-panel hidden"></div>
+                    <form id="car-form"></form>
                 </div>
-                <div class="db-controls">
-                    <button id="save-db">Сохранить базу</button>
-                    <label><button onclick="document.getElementById('load-db-input').click();">Загрузить</button></label>
-                    <input type="file" id="load-db-input" style="display: none;"/>
+            </div>
+            <!-- Колонка Заказов -->
+            <div class="column">
+                <h2>Заказы на ремонт</h2>
+                <div id="orders-section" class="hidden">
+                    <div class="column-controls">
+                        <input type="search" id="order-search" placeholder="Поиск в заказах...">
+                        <select id="order-filter"></select>
+                        <select id="order-sort"></select>
+                    </div>
+                    <div class="list-container"><ul id="orders-list"></ul></div>
+                    <form id="order-form"></form>
                 </div>
-            </header>
-
-            <!-- ВСЕ "СТРАНИЦЫ" ПРИЛОЖЕНИЯ -->
-            <div id="dashboard-view" class="view"></div>
-            <div id="workspace-view" class="view hidden"></div>
-            <div id="inventory-view" class="view hidden"></div>
-            <div id="reports-view" class="view hidden"></div>
+            </div>
         </div>
     </div>
     
-    <!-- Подключаем главный модульный скрипт -->
-    <script type="module" src="src/app.js"></script>
+    <!-- Скрипт для вставки HTML форм, чтобы не загромождать основной код -->
+    <script>
+        document.getElementById('client-form').innerHTML = `<h3 id="client-form-title">Добавить клиента</h3><input type="text" id="client-fio" placeholder="ФИО клиента" required><input type="tel" id="client-phone" placeholder="Телефон" required><input type="email" id="client-email" placeholder="Email (необязательно)"><div class="form-buttons"><button type="submit" class="submit-btn" id="client-submit-btn">Добавить</button><button type="button" class="cancel-btn hidden" id="client-cancel-btn">Отмена</button></div>`;
+        document.getElementById('car-form').innerHTML = `<h3 id="car-form-title">Добавить автомобиль</h3><input type="text" id="car-brand" placeholder="Марка" required><input type="text" id="car-model" placeholder="Модель" required><input type="text" id="car-vin" placeholder="VIN-код" required><div class="form-buttons"><button type="submit" class="submit-btn" id="car-submit-btn">Добавить</button><button type="button" class="cancel-btn hidden" id="car-cancel-btn">Отмена</button></div>`;
+        document.getElementById('order-form').innerHTML = `<h3 id="order-form-title">Добавить заказ</h3><input type="text" id="order-description" placeholder="Описание работ" required><input type="number" id="order-cost" placeholder="Стоимость работ (руб.)" min="0" step="0.01"><textarea id="order-parts" placeholder="Использованные запчасти и материалы..."></textarea><select id="order-status"><option value="Новый">Новый</option><option value="В работе">В работе</option><option value="Готов">Готов</option><option value="Выдан">Выдан</option></select><div class="form-buttons"><button type="submit" class="submit-btn" id="order-submit-btn">Добавить</button><button type="button" class="cancel-btn hidden" id="order-cancel-btn">Отмена</button></div>`;
+        document.getElementById('order-filter').innerHTML = `<option value="all">Все статусы</option><option value="Новый">Новый</option><option value="В работе">В работе</option><option value="Готов">Готов</option><option value="Выдан">Выдан</option>`;
+        document.getElementById('order-sort').innerHTML = `<option value="date_desc">Сначала новые</option><option value="date_asc">Сначала старые</option><option value="cost_desc">Сначала дорогие</option><option value="cost_asc">Сначала дешевые</option>`;
+    </script>
+    <script src="sql.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
